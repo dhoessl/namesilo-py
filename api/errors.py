@@ -47,6 +47,12 @@ class RecordInvalidTypeError(GenericRecordError):
         self.domain = domain
 
 
+class RecordListEmptyError(GenericRecordError):
+    def __init__(self, domain: str) -> None:
+        super().__init__(f"Domain {domain} record list is empty!")
+        self.domain = domain
+
+
 class GenericDomainError(Exception):
     def __init__(self, msg: str = "Generic Domain Error") -> None:
         super().__init__(msg)

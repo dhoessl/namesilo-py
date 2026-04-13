@@ -81,22 +81,31 @@ class Record:
                 return True
         return False
 
+    def _record_exists(self, record: dict) -> bool:
+        if (
+            self.type == record["type"]
+            and self.host == record["host"]
+        ):
+            self.id = record["record_id"]
+            return True
+        elif (
+            self.type == record["type"]
+            and (self.host == "" or self.host is None)
+            and record["host"] == "@"
+        ):
+            self.id = record["record_id"]
+            return True
+        return False
+
     def exists(self) -> bool:
         reply_records = self._list_api()
-        for record in reply_records:
-            if (
-                self.type == record["type"]
-                and self.host == record["host"]
-            ):
-                self.id = record["record_id"]
+        if type(reply_records) is dict:
+            if self._exists_single_response(reply_records):
                 return True
-            elif (
-                self.type == record["type"]
-                and (self.host == "" or self.host is None)
-                and record["host"] == "@"
-            ):
-                self.id = record["record_id"]
-                return True
+        elif type(reply_records) is list:
+            for record in reply_records:
+                if self._exists_single_response(record):
+                    return True
         raise RecordNotFoundError(self.id, self.host, self.type)
 
     def add(self) -> str:
