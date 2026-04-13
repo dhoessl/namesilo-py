@@ -90,6 +90,13 @@ class Record:
             ):
                 self.id = record["record_id"]
                 return True
+            elif (
+                self.type == record["type"]
+                and (self.host == "" or self.host is None)
+                and record["host"] == "@"
+            ):
+                self.id = record["record_id"]
+                return True
         raise RecordNotFoundError(self.id, self.host, self.type)
 
     def add(self) -> str:

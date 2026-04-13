@@ -17,7 +17,14 @@ class Domain:
     def _records_equal(self, record: dict, new_record: Record) -> bool:
         if (
             record["type"] == new_record.type
-            and record["host"] == new_record.host
+            and (
+                record["host"] == new_record.host
+                or (
+                    (
+                        record["host"] is None or record["host"] == ""
+                    ) and new_record.host == "@"
+                )
+            )
             and record["value"] == new_record.value
             and str(record["ttl"]) == new_record.ttl
         ):
