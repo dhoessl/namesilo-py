@@ -100,11 +100,11 @@ class Record:
     def exists(self) -> bool:
         reply_records = self._list_api()
         if type(reply_records) is dict:
-            if self._exists_single_response(reply_records):
+            if self._record_exists(reply_records):
                 return True
         elif type(reply_records) is list:
             for record in reply_records:
-                if self._exists_single_response(record):
+                if self._record_exists(record):
                     return True
         raise RecordNotFoundError(self.id, self.host, self.type)
 
