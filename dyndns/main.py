@@ -91,8 +91,10 @@ class DynDNS:
             if not records:
                 logger.warning(f"Could not fetch any IP for {domain}")
                 exit(0)
+            logger.debug(f"Updates for: {records}")
             ns_domain = Domain(domain, NamesiloAPI(api_key), records)
             for record in ns_domain.records:
+                logger.debug(f"Records: {record}")
                 if record["state"] == "updated" or record["state"] == "added":
                     logger.info(
                         f"Record changed. domain: {ns_domain.domain} - "
