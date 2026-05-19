@@ -4,6 +4,8 @@ from .errors import (
     RecordIdNotFoundError, RecordInvalidTypeError
 )
 
+from loguru import logger
+
 
 class Record:
     def __init__(
@@ -127,8 +129,10 @@ class Record:
                 self.id = self._update_api()
             return True
         except RecordIdNotFoundError:
+            logger.debug(f"Record {self.id} not found")
             return False
         except RecordInvalidTypeError:
+            logger.warning(f"Record {self.id} invalid Type")
             return False
 
     def delete(self) -> bool:
@@ -141,3 +145,15 @@ class Record:
                 return False
         except RecordIdNotFoundError:
             return False
+
+    def show(self) -> dict:
+        """ Shows record data """
+        return {
+            "id": self.id,
+            "domain": self.domain,
+            "host": self.host,
+            "type": self.type,
+            "value": self.value,
+            "ttl": self.ttl,
+            "distance": self.distance
+        }

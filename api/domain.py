@@ -14,29 +14,26 @@ class Domain:
         self.records = records
         self.update_dns()
 
-    def _records_equal(self, record: dict, new_record: Record) -> bool:
-        if (
-            record["type"] == new_record.type
-            and (
-                record["host"] == new_record.host
-                or (
-                    (
-                        record["host"] is None or record["host"] == ""
-                    ) and new_record.host == "@"
-                )
-            )
-            and record["value"] == new_record.value
-            and str(record["ttl"]) == new_record.ttl
-        ):
-            if record["type"] == "MX" and new_record.type == "MX":
-                if str(record["distance"]) == new_record.distance:
-                    return True
+    def _records_equal(self, new_record: Record) -> bool:
+        if type(new_record) is not Record:
+            raise RuntimeError("checking record must be type Record")
+        for record in self.list():
+            if new_record.id != record.id:
+                continue
+            if (
+                new_record.type == record.type
+                and new_record.host == record.host
+                and new_record.value == record.value
+                and str(new_record.ttl) == str(record.ttl)
+            ):
+                if new_record.type == "MX" and record.type == "MX":
+                    if new_record.distance == record.distance:
+                        return True
+                    else:
+                        return False
                 else:
-                    return False
-            else:
-                return True
-        else:
-            return False
+                    return True
+        return False
 
     def update_dns(self) -> None:
         for record in self.records:
@@ -56,7 +53,7 @@ class Domain:
                     # it does not exist
                     new_record.exists()
                     if (
-                        not self._records_equal(record, new_record)
+                        not self._records_equal(new_record)
                         and new_record.update()
                     ):
                         record["state"] = "updated"
@@ -88,12 +85,19 @@ class Domain:
     def list(self) -> list:
         records = []
         api_records = self.api.send_request(
-            "dnsListRecords", "&domain={self.domain}"
+            "dnsListRecords", f"&domain={self.domain}"
         )["resource_record"]
-        for record in api_records:
+        if type(api_records) is dict:
             records.append(Record(
-                record["record_id"], record["type"], record["host"],
-                record["value"], self.domain, self.api, record["ttl"],
-                record["distance"]
+                api_records["record_id"], api_records["type"],
+                api_records["host"], api_records["value"], self.domain,
+                self.api, api_records["ttl"], api_records["distance"]
             ))
+        elif type(api_records) is list:
+            for record in api_records:
+                records.append(Record(
+                    record["record_id"], record["type"], record["host"],
+                    record["value"], self.domain, self.api, record["ttl"],
+                    record["distance"]
+                ))
         return records
