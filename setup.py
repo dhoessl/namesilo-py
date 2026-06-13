@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="namesilo-py",
-    version="0.0.3",
+    version="0.0.4",
     description=(
         "module to add, delete and modify DNS Records on Namesilo.com"
     ),
