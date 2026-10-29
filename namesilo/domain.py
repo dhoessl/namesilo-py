@@ -31,6 +31,11 @@ class Domain:
             "dnsListRecords",
             f"&domain={self.domain}"
         )
+        if (
+            isinstance(response, str)
+            and response == "No DNS records associated with this domain"
+        ):
+            return None
         self._parse_records(response["resource_record"])
 
     def _parse_records(self, records: list | dict) -> None:
@@ -71,57 +76,35 @@ class Domain:
                 return None
         return None
 
-    def update_record(
-        self, host: str, rtype: str, value: str, ttl: int = 3600,
-        distance: int = 10, rid: str = None
-    ) -> None:
+    def update_record(self, rid: str, **kwargs) -> None:
+        if not kwargs:
+            return None
         for record in self.records:
-            if rid and record.id == rid:
-                if (
-                    record.host != host or
-                    record.type != rtype
-                ):
-                    record.remove()
-                    record.host = host
-                    record.type = rtype
-                    record.value = value
-                    record.ttl = int(ttl)
-                    record.distance = int(distance)
-                    record.add()
-                    return None
-                elif (
-                    record.value != value
-                    or record.ttl != int(ttl)
-                    or (
-                        record.type == "MX"
-                        and record.distance != int(distance)
-                    )
-                ):
-                    record.value = value
-                    record.ttl = int(ttl)
-                    if record.type == "MX":
-                        record.distance = int(distance)
-                    record.update()
-                    return None
-                else:
-                    return None
-            elif (
-                not rid
-                and record.host == host
-                and record.type == rtype
+            if rid != record.id:
+                continue
+            if (
+                (
+                    "host" in kwargs
+                    and kwargs["host"] != record.host
+                ) or (
+                    "rtype" in kwargs
+                    and kwargs["rtype"] != record.type
+                )
             ):
-                if (
-                    record.value != value
-                    or record.ttl != int(ttl)
-                    or (
-                        record.type == "MX"
-                        and record.distance != int(distance)
-                    )
-                ):
-                    record.value = value
-                    record.ttl = int(ttl)
-                    if record.type == "MX":
-                        record.distance = int(distance)
-                    record.update()
-                return None
-        return None
+                self.remove_record_by_id(record.id)
+                ttl = kwargs["ttl"] if "ttl" in kwargs else 3600
+                distance = kwargs["distance"] if "distance" in kwargs else 0
+                self.add_record(
+                    kwargs["host"], kwargs["rtype"], kwargs["value"], int(ttl),
+                    int(distance)
+                )
+            if "value" in kwargs and kwargs["value"] != record.value:
+                record.value = kwargs["value"]
+            if "ttl" in kwargs and int(kwargs["ttl"]) != int(record.ttl):
+                record.ttl = int(kwargs["ttl"])
+            if (
+                "distance" in kwargs
+                and int(kwargs["distance"]) != int(record.distance)
+            ):
+                record.distance = int(kwargs["distance"])
+            record.update()
