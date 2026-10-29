@@ -37,8 +37,14 @@ class NamesiloAPI:
             )
         return response["reply"]
 
-    def get_domains(self, domains: list[str]) -> Domain:
+    def get_domains(self, domains: list[str]) -> list[Domain]:
         domain_list = []
         for domain in domains:
             domain_list.append(Domain(self, domain))
         return domain_list
+
+    def get_domain(self, domain: str) -> Domain:
+        for d in self.domains:
+            if d.domain == domain:
+                return d
+        return None
