@@ -32,7 +32,10 @@ class Record:
         )
         if self.type == "MX":
             request_options += f"&distance={self.distance}"
-        self.id = self.api.send_request("dnsAddRecord", request_options)
+        self.id = self.api.send_request(
+            "dnsAddRecord",
+            request_options
+        )["record_id"]
 
     def remove(self) -> None:
         self.api.send_request(
@@ -48,7 +51,8 @@ class Record:
         if self.type == "MX":
             request_options += f"&distance={self.distance}"
         self.id = self.api.send_request(
-            "dnsUpdateRecord", request_options
+            "dnsUpdateRecord",
+            request_options
         )["record_id"]
 
     def get_table_row(self) -> list:
