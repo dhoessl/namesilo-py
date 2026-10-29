@@ -18,7 +18,7 @@ class Domain:
         self.records = []
         response = self.api.send_request(
             "dnsListRecords",
-            f"domain={self.domain}"
+            f"&domain={self.domain}"
         )
         self._parse_records(response["resource_record"])
 
