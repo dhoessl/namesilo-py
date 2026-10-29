@@ -76,7 +76,7 @@ class Domain:
         distance: int = 10, rid: str = None
     ) -> None:
         for record in self.records:
-            if record.id == rid:
+            if rid and record.id == rid:
                 if (
                     record.host != host or
                     record.type != rtype
@@ -105,8 +105,8 @@ class Domain:
                     return None
                 else:
                     return None
-            if (
-                record.id != rid
+            elif (
+                not rid
                 and record.host == host
                 and record.type == rtype
             ):
