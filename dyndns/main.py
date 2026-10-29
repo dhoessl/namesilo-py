@@ -5,7 +5,7 @@ from requests.exceptions import ConnectionError
 from loguru import logger
 from .config import get_config
 
-from api import NamesiloAPI
+from namesilo import NamesiloAPI
 
 
 class DynDNS:
