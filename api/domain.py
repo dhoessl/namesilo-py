@@ -8,11 +8,11 @@ if TYPE_CHECKING:
 
 
 class Domain:
-    def __init__(self, api: NamesiloAPI, domain: str, records: list) -> None:
+    def __init__(self, api: NamesiloAPI, domain: str) -> None:
         self.api = api
         self.domain = domain
         self.records = []
-        self.add_records(records)
+        self.update_record_list()
 
     def update_record_list(self) -> None:
         self.records = []
@@ -20,16 +20,18 @@ class Domain:
             "dnsListRecords",
             f"domain={self.domain}"
         )
-        self._create_records(response["resource_record"])
+        self._parse_records(response["resource_record"])
 
-    def add_records(self, records: list | dict) -> None:
+    def _parse_records(self, records: list | dict) -> None:
         if isinstance(records, dict):
             records = [records]
         for record in records:
-            self.add_record(
-                record["host"], record["type"], record["value"],
-                int(record["ttl"]), int(record["distance"]),
-                record["record_id"]
+            self.records.append(
+                Record(
+                    self.api, self.domain, record["type"], record["host"],
+                    record["value"], int(record["ttl"]),
+                    int(record["distance"]), record["record_id"]
+                )
             )
 
     def add_record(
@@ -37,8 +39,7 @@ class Domain:
         distance: int = 10, rid: str = None
     ) -> None:
         new_record = Record(
-            api=self.api, domain=self, rtype=rtype, host=host, value=value,
-            ttl=int(ttl), distance=int(distance)
+            self.api, self.domain, rtype, host, value, int(ttl), int(distance)
         )
         new_record.add()
         self.records.append(new_record)

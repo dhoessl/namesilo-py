@@ -6,13 +6,12 @@ from .errors import RecordExistsError
 
 
 if TYPE_CHECKING:
-    from .domain import Domain
     from .api import NamesiloAPI
 
 
 class Record:
     def __init__(
-        self, api: NamesiloAPI, domain: Domain, rtype: str, host: str,
+        self, api: NamesiloAPI, domain: str, rtype: str, host: str,
         value: str, ttl: int = 7207, distance: int = 10, rid: str = None
     ) -> None:
         self.api = api

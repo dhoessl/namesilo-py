@@ -40,10 +40,5 @@ class NamesiloAPI:
     def get_domains(self, domains: list[str]) -> Domain:
         domain_list = []
         for domain in domains:
-            response = self.send_request(
-                "dnsListRecords", f"&domain={domain}"
-            )
-            domain_list.append(
-                Domain(self, domain, response["resource_record"])
-            )
+            domain_list.append(Domain(self, domain))
         return domain_list
