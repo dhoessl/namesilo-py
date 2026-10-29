@@ -55,21 +55,21 @@ class Domain:
         new_record.add()
         self.records.append(new_record)
 
-    def remove_record(self, host: str, rtype: str, rid: str = None) -> None:
+    def remove_record(self, host: str, rtype: str) -> None:
         for record in self.records:
-            if (
-                (
-                    rid
-                    and record.id == rid
-                ) or (
-                    not rid
-                    and record.host == host
-                    and record.type == rtype
-                )
-            ):
+            if record.host == host and record.type == rtype:
                 record.remove()
                 self.records.remove(record)
                 return None
+        return None
+
+    def remove_record_by_id(self, rid: str) -> None:
+        for record in self.records:
+            if rid == record.id:
+                record.remove()
+                self.records.remove(record)
+                return None
+        return None
 
     def update_record(
         self, host: str, rtype: str, value: str, ttl: int = 3600,
