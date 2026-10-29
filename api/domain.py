@@ -28,7 +28,8 @@ class Domain:
         for record in records:
             self.add_record(
                 record["host"], record["type"], record["value"],
-                int(record["ttl"]), int(record["distance"]), record["id"]
+                int(record["ttl"]), int(record["distance"]),
+                record["record_id"]
             )
 
     def add_record(
