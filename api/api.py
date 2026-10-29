@@ -1,16 +1,22 @@
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from requests import get
 from .errors import NamesiloApiReturnError
 from time import sleep
 
-# Reponse Code 429 too many requests (max 60 in a minute)
+if TYPE_CHECKING:
+    from .domain import Domain
+
+# NOTE: Reponse Code 429 too many requests (max 60 in a minute)
 
 
 class NamesiloAPI:
-    def __init__(self, key: str) -> None:
+    def __init__(self, key: str, domains: list[str]) -> None:
         self.uri = "https://www.namesilo.com/api/"
         self.options = f"?version=1&type=json&key={key}"
         self.max_retries = 3
         self.timeout = 65
+        self.domains = self.get_domains(domains)
 
     def send_request(self, operation: str, request_options: str) -> dict:
         retry = 0
@@ -34,3 +40,14 @@ class NamesiloAPI:
                 response["reply"]["detail"]
             )
         return response["reply"]
+
+    def get_domain(self, domains: list[str]) -> Domain:
+        domain_list = []
+        for domain in domains:
+            response = self.send_request(
+                "dnsListRecords", f"&domain={domain}"
+            )
+            domain_list.append(
+                Domain(self, domain, response["resource_record"])
+            )
+        return domain_list
