@@ -1,6 +1,5 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from .api import NamesiloAPI
 from .errors import RecordExistsError
 
 # from loguru import logger
@@ -8,6 +7,7 @@ from .errors import RecordExistsError
 
 if TYPE_CHECKING:
     from .domain import Domain
+    from .api import NamesiloAPI
 
 
 class Record:
