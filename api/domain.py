@@ -1,5 +1,10 @@
-from .api import NamesiloAPI
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from .record import Record
+
+
+if TYPE_CHECKING:
+    from .api import NamesiloAPI
 
 
 class Domain:

@@ -1,11 +1,7 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
 from requests import get
 from .errors import NamesiloApiReturnError
 from time import sleep
-
-if TYPE_CHECKING:
-    from .domain import Domain
+from .domain import Domain
 
 # NOTE: Reponse Code 429 too many requests (max 60 in a minute)
 
