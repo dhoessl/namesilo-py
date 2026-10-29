@@ -35,6 +35,8 @@ class NamesiloAPI:
                 operation, request_options, response["reply"]["code"],
                 response["reply"]["detail"]
             )
+        if response["reply"]["detail"] == "No DNS records associated with this domain":  # noqa: E501
+            response["reply"]["resource_record"] = {}
         return response["reply"]
 
     def get_domains(self, domains: list[str]) -> list[Domain]:

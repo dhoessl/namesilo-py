@@ -31,11 +31,6 @@ class Domain:
             "dnsListRecords",
             f"&domain={self.domain}"
         )
-        if (
-            isinstance(response, str)
-            and response == "No DNS records associated with this domain"
-        ):
-            return None
         self._parse_records(response["resource_record"])
 
     def _parse_records(self, records: list | dict) -> None:
