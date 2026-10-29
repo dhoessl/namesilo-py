@@ -50,3 +50,8 @@ class Record:
         self.id = self.api.send_request(
             "dnsUpdateRecord", request_options
         )["record_id"]
+
+    def get_table_row(self) -> list:
+        return [
+            self.id, self.type, self.host, self.ttl, self.distance, self.value
+        ]

@@ -1,5 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
+from prettytable import PrettyTable
+
 from .record import Record
 
 
@@ -13,6 +15,15 @@ class Domain:
         self.domain = domain
         self.records = []
         self.update_record_list()
+
+    def get_data_as_table(self) -> PrettyTable:
+        table = PrettyTable()
+        table.align = "l"
+        table.field_names = ["ID", "Type", "Host", "TTL", "Distance", "Value"]
+        for record in self.records:
+            table.add_row(record.get_table_row())
+        table_str = table.get_string(sortby="Type")
+        print(f"{table_str}")
 
     def update_record_list(self) -> None:
         self.records = []

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="namesilo-py",
-    version="0.0.5-rc7",
+    version="0.0.5-rc8",
     description=(
         "module to add, delete and modify DNS Records on Namesilo.com"
     ),
@@ -13,7 +13,7 @@ setup(
     packages=find_packages(exclude=["docs", "docs.*"]),
     package_data={},
     include_package_data=True,
-    install_requires=["loguru", "requests", "pyyaml"],
+    install_requires=["loguru", "requests", "pyyaml", "prettytable"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
