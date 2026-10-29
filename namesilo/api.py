@@ -1,16 +1,18 @@
 from requests import get
 from .errors import NamesiloApiReturnError
 from time import sleep
+from .domain import Domain
 
-# Reponse Code 429 too many requests (max 60 in a minute)
+# NOTE: Reponse Code 429 too many requests (max 60 in a minute)
 
 
 class NamesiloAPI:
-    def __init__(self, key: str) -> None:
+    def __init__(self, key: str, domains: list[str]) -> None:
         self.uri = "https://www.namesilo.com/api/"
         self.options = f"?version=1&type=json&key={key}"
         self.max_retries = 3
         self.timeout = 65
+        self.domains = self.get_domains(domains)
 
     def send_request(self, operation: str, request_options: str) -> dict:
         retry = 0
@@ -33,4 +35,18 @@ class NamesiloAPI:
                 operation, request_options, response["reply"]["code"],
                 response["reply"]["detail"]
             )
+        if response["reply"]["detail"] == "No DNS records associated with this domain":  # noqa: E501
+            response["reply"]["resource_record"] = []
         return response["reply"]
+
+    def get_domains(self, domains: list[str]) -> list[Domain]:
+        domain_list = []
+        for domain in domains:
+            domain_list.append(Domain(self, domain))
+        return domain_list
+
+    def get_domain(self, domain: str) -> Domain:
+        for d in self.domains:
+            if d.domain == domain:
+                return d
+        return None
