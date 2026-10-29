@@ -42,10 +42,11 @@ class DynDNS:
                 ipv6 = self._get_my_ipv6(self.config["ipv6_server"])
             else:
                 ipv6 = None
+            urllib3.util.connection.allowed_gai_family = lambda: AF_INET
             api = NamesiloAPI(api_key, [domain])
             record_v4_found = False
             record_v6_found = False
-            for record in api.get_domains(domain).records:
+            for record in api.get_domain(domain).records:
                 if (
                     ipv4
                     and record.type == "A"
@@ -75,7 +76,7 @@ class DynDNS:
                             f"{domain_config['subdomain']}.{domain}"
                         )
             if not record_v4_found and ipv4:
-                api.get_domains(domain).add_record(
+                api.get_domain(domain).add_record(
                     domain_config["subdomain"], "A", ipv4, 3600
                 )
                 logger.info(
@@ -83,7 +84,7 @@ class DynDNS:
                     f"{domain_config['subdomain']}.{domain}"
                 )
             if not record_v6_found and ipv6:
-                api.get_domains(domain).add_record(
+                api.get_domain(domain).add_record(
                     domain_config["subdomain"], "AAAA", ipv6, 3600
                 )
                 logger.info(
